@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AURA RNG</title>
+<link href="https://fonts.googleapis.com/css2?family=Lobster&family=Rye&family=Bangers&family=Shrikhand&family=Rubik+Glitch&family=Vast+Shadow&family=Faster+One&family=Bungee+Shade&family=Nosifer&family=Cinzel+Decorative:wght@700&family=Caesar+Dragon&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Cinzel:wght@700&family=Pacifico&family=Creepster&family=Bungee&family=Press+Start+2P&family=Special+Elite&family=Righteous&family=Audiowide&family=Monoton&family=UnifrakturCook:wght@700&family=Metal+Mania&family=Fredericka+the+Great&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b0820;--card:#15112f;--ln:#2b2458;--tx:#ece8ff;--mut:#8d86b8;--c:#8f7bff}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;color:var(--tx);font:16px/1.5 system-ui,sans-serif;background:radial-gradient(ellipse at 50% -10%,#2a1b63,var(--bg) 60%) fixed}
+main{max-width:980px;margin:0 auto;padding:20px 14px 40px}
+h1{font:2.4rem Audiowide,sans-serif;text-align:center;margin:8px 0 14px;letter-spacing:.06em;text-shadow:0 0 24px #8f7bff}
+h2{font-size:1.05rem;margin:0 0 10px}
+.stats{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:14px;color:var(--mut)}
+.stats span{background:var(--card);border:1px solid var(--ln);padding:4px 12px;border-radius:99px}
+.card{background:var(--card);border:1px solid var(--ln);border-radius:14px;padding:16px}
+.hero{text-align:center;padding:26px 16px;margin-bottom:14px}
+#res{font-size:clamp(2rem,9vw,4.2rem);min-height:1.3em;color:var(--c);text-shadow:0 0 28px var(--c);transition:color .3s}
+#od{color:var(--mut);min-height:1.5em;margin-bottom:12px}
+#rb{font:1.4rem Righteous,sans-serif;padding:14px 56px;border:0;border-radius:12px;background:linear-gradient(135deg,#7a5cff,#d04bff);color:#fff;cursor:pointer;box-shadow:0 0 26px #7a5cff88}
+#rb:disabled{opacity:.45;cursor:wait;box-shadow:none}
+.bar{height:6px;background:var(--ln);border-radius:9px;margin:16px auto 10px;max-width:340px;overflow:hidden}
+.bar i{display:block;height:100%;width:100%;background:var(--c)}
+.grid{display:block}.grid>.card{max-width:640px;margin:0 auto}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--ln)}
+.row small{display:block;color:var(--mut)}
+button{font:inherit;cursor:pointer}
+.row button,#cb{background:#2a2166;color:var(--tx);border:1px solid #4a3fa0;border-radius:8px;padding:6px 12px}
+.row button:hover:not(:disabled),#cb:hover{background:#3a2e8c}
+button:disabled{opacity:.4;cursor:not-allowed}
+button:focus-visible,input:focus-visible{outline:2px solid #fff;outline-offset:2px}
+input[type=text]{background:#0e0a24;border:1px solid var(--ln);color:var(--tx);border-radius:8px;padding:7px 10px;width:60%}
+.col{display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:.95rem}
+.col div{padding:4px 8px;border-radius:6px;background:#0e0a24;border:1px solid var(--ln);overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.col .no{color:#4d4780}
+footer{text-align:center;margin-top:18px}
+footer button{background:none;border:0;color:var(--mut);text-decoration:underline}
+#cs{display:none;position:fixed;inset:0;z-index:9;overflow:hidden;background:#000;align-items:center;justify-content:center;flex-direction:column;cursor:pointer}
+#cs.on{display:flex;animation:bg var(--d) ease-out both}
+#cs.shake .nm{animation:pop var(--d) ease-out both,sh .12s 0.55s infinite}
+@keyframes bg{0%{background:#000}45%{background:#000}60%{background:radial-gradient(circle,var(--c),#000 75%)}100%{background:radial-gradient(circle,color-mix(in srgb,var(--c) 55%,#000),#000 80%)}}
+@keyframes pop{0%{opacity:0;transform:scale(.2);filter:blur(24px)}42%{opacity:0;transform:scale(.2);filter:blur(24px)}56%{opacity:1;transform:scale(1.5);filter:blur(0)}68%{transform:scale(1)}100%{opacity:1;transform:scale(1)}}
+@keyframes sh{0%,100%{translate:0 0}25%{translate:6px -4px}50%{translate:-5px 5px}75%{translate:4px 3px}}
+@keyframes rise{0%,55%{opacity:0}75%,100%{opacity:1}}
+@keyframes spin{to{rotate:360deg}}
+@keyframes fl{0%,43%{opacity:0}48%{opacity:1}70%,100%{opacity:0}}
+.nm{position:relative;font-size:clamp(2.2rem,10vw,6.5rem);color:#fff;text-align:center;padding:0 12px;text-shadow:0 0 18px var(--c),0 0 60px var(--c);animation:pop var(--d) ease-out both}
+.od{position:relative;font:1.3rem Righteous,sans-serif;color:#fff;margin-top:14px;animation:rise var(--d) both}
+.sk{position:absolute;bottom:16px;color:#ffffff77;font-size:.85rem}
+.rays{position:absolute;width:220vmax;height:220vmax;background:repeating-conic-gradient(from 0deg,var(--c) 0 6deg,transparent 6deg 24deg);opacity:.22;animation:spin calc(var(--d)*2.2) linear both,rise var(--d) both;mask:radial-gradient(circle,#000,transparent 55%)}
+.fl{position:absolute;inset:0;background:#fff;animation:fl var(--d) both;pointer-events:none}
+#pc{position:absolute;inset:0;pointer-events:none}
+[hidden]{display:none!important}
+#rl{position:relative;height:100px;max-width:640px;margin:0 auto 14px;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 18%,#000 82%,transparent);mask-image:linear-gradient(90deg,transparent,#000 18%,#000 82%,transparent)}
+#strip{display:flex;height:100%;will-change:transform}
+.cd{flex:0 0 128px;margin:0 6px;height:100%;display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.1;font-size:.95rem;border:2px solid;border-radius:12px;background:#0e0a24;overflow:hidden;padding:4px}
+.cd.q{color:#fff;border-color:#fff;font-size:2.2rem}
+.mk{position:absolute;left:50%;top:0;bottom:0;width:3px;margin-left:-1.5px;background:#fff;box-shadow:0 0 14px #fff,0 0 30px var(--c)}
+.rolling #res,.rolling #od{display:none}
+.nbl{display:none;position:absolute;inset:-20%;background:radial-gradient(circle at 25% 30%,var(--c),transparent 40%),radial-gradient(circle at 75% 65%,#7a5cff,transparent 45%),radial-gradient(circle at 50% 95%,var(--c),transparent 40%);filter:blur(40px);opacity:.6;animation:drift 9s ease-in-out infinite alternate,rise var(--d) both}
+.neb .nbl{display:block}
+.rainbow .nbl{animation:drift 9s ease-in-out infinite alternate,hue 3s linear infinite,rise var(--d) both}
+@keyframes drift{to{transform:translate(6%,-5%) rotate(20deg) scale(1.2)}}
+@keyframes hue{to{filter:blur(40px) hue-rotate(360deg)}}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-bottom:14px}
+.tabs button{background:var(--card);border:1px solid var(--ln);color:var(--mut);padding:8px 16px;border-radius:10px}
+.tabs button.on{color:#fff;background:#3a2e8c;border-color:#7a5cff;box-shadow:0 0 14px #7a5cff66}
+.spin{box-shadow:0 0 30px #7a5cff55}
+.spin #res{animation:jit .09s infinite;filter:blur(1.5px)}
+.tease{animation:ring .35s infinite alternate}
+@keyframes jit{0%{translate:-4px 2px}50%{translate:5px -2px}100%{translate:-2px -3px}}
+@keyframes ring{from{box-shadow:0 0 18px var(--c)}to{box-shadow:0 0 70px var(--c),inset 0 0 40px var(--c)}}
+@media(prefers-reduced-motion:reduce){.rays{animation:none}#cs.shake .nm{animation:pop var(--d) ease-out both}}
+</style></head><body>
+<main>
+<h1>AURA RNG</h1>
+<div class="stats" id="st"></div>
+<nav class="tabs" id="tabs"></nav>
+<section class="card hero" id="hero">
+<div id="rl" hidden><div id="strip"></div><i class="mk"></i></div>
+<div id="res">Ready to roll</div><div id="od">Press roll to find your first aura</div>
+<button id="rb">ROLL</button>
+<div class="bar"><i id="bar"></i></div>
+<div id="lk"></div>
+</section>
+<div class="grid">
+<section class="card" id="up"></section>
+<section class="card" id="po"></section>
+<section class="card" id="codes"><h2>Codes</h2><input type="text" id="ci" placeholder="Enter a code" autocomplete="off"> <button id="cb">Redeem</button><p id="cm" style="color:var(--mut);min-height:1.5em"></p></section>
+<section class="card" id="col"></section>
+</div>
+<footer><button id="rs">Reset save</button></footer>
+</main>
+<div id="cs"></div>
+<script>
+const $=s=>document.querySelector(s);
+// name, odds (1 in N), font, color
+const A=[["Dull",2,"Special Elite","#a9a9b8"],["Spark",4,"Righteous","#ffd966"],["Pebble",8,"Rye","#c2a27a"],["Ember",10,"Bungee","#ff8a3d"],["Breeze",25,"Pacifico","#7fe3d0"],["Mist",50,"Lobster","#b9c8ff"],["Frost",100,"Cinzel","#8fd3ff"],["Blaze",250,"Bangers","#ff5c3a"],["Tidal",500,"Audiowide","#4d86ff"],["Thunder",2500,"Orbitron","#fff04d"],["Crimson",5000,"Shrikhand","#ff3b5c"],["Aurora",10000,"Fredericka the Great","#5dffb0"],["Glitch",25000,"Rubik Glitch","#00f0ff"],["Nebula",50000,"Monoton","#c06bff"],["Shadow",100000,"Vast Shadow","#9aa0ff"],["Phoenix",250000,"Metal Mania","#ff4d2e"],["Eclipse",1000000,"UnifrakturCook","#ffffff"],["Dragon",2000000,"Caesar Dragon","#ff9d00"],["Celestial",5000000,"Cinzel Decorative","#ffe9a8"],["Void Emperor",25000000,"Creepster","#b03cff"],["Cosmic",50000000,"Faster One","#4dffea"],["AURA PRIME",100000000,"Press Start 2P","#ff3df2"],["Eternity",500000000,"Bungee Shade","#ffd700"],["GENESIS",1000000000,"Nosifer","#ff1744"]];
+const U=[["l","Luck","+25% luck, stacks",50,2.1,40],["s","Roll speed","18% faster rolls",100,2.4,14],["c","Coin boost","+50% coins per roll",200,2,20]];
+const P=[[10,"Lucky potion",400],[100,"Great potion",20000],[1000,"Ultimate potion",1000000]];
+const D={coins:0,rolls:0,lvl:{l:0,s:0,c:0},auto:0,pot:{10:0,100:0,1000:0},found:{},best:-1,founder:0,used:{},act:0};
+let S=structuredClone(D);
+try{Object.assign(S,JSON.parse(localStorage.getItem("aurarng")||"{}"))}catch{}
+let busy=0,cd=0,aon=false;
+const save=()=>{try{localStorage.setItem("aurarng",JSON.stringify(S))}catch{}};
+const f=n=>n<1e3?Math.floor(n)+"":n<1e6?(n/1e3).toFixed(1)+"K":n<1e9?(n/1e6).toFixed(1)+"M":n<1e12?(n/1e9).toFixed(1)+"B":(n/1e12).toFixed(1)+"T";
+const luck=()=>1.25**S.lvl.l*(S.founder?2:1);
+const cdMs=()=>Math.max(120,2000*.82**S.lvl.s);
+
+function show(i){const [n,o,fo,c]=A[i],r=$("#res");r.textContent=n;r.style.fontFamily=`'${fo}',sans-serif`;document.documentElement.style.setProperty("--c",c);$("#od").textContent="1 in "+o.toLocaleString()}
+function reel(i,an,done){
+  const rare=A[i][1]>=1000;
+  if(!an){if(!rare)show(i);done();return}
+  const rl=$("#rl"),sp=$("#strip"),h=$("#hero"),cw=140,N=44,tg=N-7,cs=[];
+  for(let k=0;k<N;k++){let r;do{r=Math.random()*A.length|0}while(rare&&r==i);cs.push(k==tg?i:r)}
+  sp.innerHTML=cs.map((k,j)=>j==tg&&rare?`<div class="cd q">?</div>`:`<div class="cd" style="font-family:'${A[k][2]}',sans-serif;color:${A[k][3]};border-color:${A[k][3]}">${A[k][0]}</div>`).join("");
+  h.classList.add("spin","rolling");rl.hidden=false;
+  sp.style.transition="none";sp.style.transform="translateX(0)";void sp.offsetWidth;
+  const off=-(tg*cw+cw/2-rl.clientWidth/2+(Math.random()-.5)*60);
+  sp.style.transition=`transform ${an}ms cubic-bezier(.08,.6,.12,1)`;sp.style.transform=`translateX(${off}px)`;
+  if(rare)setTimeout(()=>h.classList.add("tease"),an*.6);
+  setTimeout(()=>{h.classList.remove("spin","rolling","tease");rl.hidden=true;if(!rare)show(i);done()},an+250);
+}
+function roll(){
+  if(busy||cd)return;
+  const L=luck()*(S.act||1);S.act=0;
+  let i=0;for(let k=A.length-1;k>0;k--)if(Math.random()<L/A[k][1]){i=k;break}
+  const o=A[i][1];
+  S.rolls++;S.found[i]=(S.found[i]||0)+1;if(i>S.best)S.best=i;
+  S.coins+=Math.ceil(o**.6)*(1+.5*S.lvl.c);
+  cd=1;$("#rb").disabled=true;
+  const ms=cdMs(),an=ms>500?Math.min(1900,ms*.85):0,b=$("#bar");
+  b.style.transition="none";b.style.width="0";void b.offsetWidth;b.style.transition=`width ${ms}ms linear`;b.style.width="100%";
+  setTimeout(()=>{cd=0;draw();next()},ms);
+  save();
+  reel(i,an,()=>{if(o>=1000)scene(i);else draw()});
+}
+function next(){if(aon&&S.auto&&!busy&&!cd)roll()}
+
+function scene(i){
+  const [n,o,fo,c]=A[i],x=Math.log10(o/1000),d=Math.min(14,2.5+x*1.6),cs=$("#cs"),st=performance.now();
+  busy=1;cs.style.setProperty("--c",c);cs.style.setProperty("--d",d+"s");
+  cs.className="on"+(x>=2?" shake":"")+(x>=1.5?" neb":"")+(x>=4?" rainbow":"");
+  cs.innerHTML=`<div class="nbl"></div><div class="rays"></div><canvas id="pc"></canvas><div class="fl"></div><div class="nm" style="font-family:'${fo}',sans-serif">${n}</div><div class="od">1 in ${o.toLocaleString()}</div><div class="sk">Tap to skip</div>`;
+  const cv=$("#pc"),g=cv.getContext("2d"),w=cv.width=innerWidth,h=cv.height=innerHeight,cx=w/2,cy=h/2,m=Math.min(w,h);
+  const stars=[],bits=[],rings=[],F=[],TH=[.5,.62,.75].slice(0,x>=3?3:x>=2?2:1);let rot=0,raf;
+  for(let k=0;k<100+x*30;k++)stars.push({a:Math.random()*6.283,r:Math.random()*m*.6,z:Math.random()*.7+.3});
+  const star=(R,pts,ang)=>{g.beginPath();for(let k=0;k<pts*2;k++){const a=ang+k*Math.PI/pts,rr=k%2?R*.28:R;g.lineTo(cx+Math.cos(a)*rr,cy+Math.sin(a)*rr)}g.closePath();g.fill()};
+  const burst=N=>{for(let k=0;k<N;k++){const a=Math.random()*6.283,v=3+Math.random()*(6+x*2.5);bits.push({x:cx,y:cy,vx:Math.cos(a)*v,vy:Math.sin(a)*v,l:1})}};
+  (function lp(t){
+    const p=Math.min((t-st)/(d*1000),1),pp=Math.min(p/.5,1);
+    g.clearRect(0,0,w,h);g.shadowBlur=0;g.lineWidth=1.5;g.strokeStyle=p>.5?c:"#fff";
+    const sp=1+pp*pp*(14+x*5)+(p>.5?3:0);
+    stars.forEach(q=>{const r0=q.r;q.r+=sp*q.z*(.4+q.r/m);if(q.r>m){q.r=Math.random()*20;q.a=Math.random()*6.283}
+      g.globalAlpha=.3+.7*q.z;g.beginPath();g.moveTo(cx+Math.cos(q.a)*r0,cy+Math.sin(q.a)*r0);g.lineTo(cx+Math.cos(q.a)*q.r,cy+Math.sin(q.a)*q.r);g.stroke()});
+    if(p<.5){
+      rot+=.03+pp*pp*.9;const R=10+pp*pp*m*.3;
+      g.globalAlpha=1;g.shadowColor=c;g.shadowBlur=30+pp*70;g.fillStyle="#fff";star(R,8,rot);
+      g.fillStyle=c;g.globalAlpha=.85;star(R*.7,4,-rot*.7);g.shadowBlur=0;
+    }
+    TH.forEach((v,k)=>{if(!F[k]&&p>=v){F[k]=1;burst(50+x*45|0);rings.push({r:0,l:1})}});
+    rings.forEach(q=>{q.r+=m*.018+x;q.l-=.012;g.globalAlpha=Math.max(q.l,0);g.lineWidth=6;g.strokeStyle=c;g.beginPath();g.arc(cx,cy,q.r,0,7);g.stroke()});
+    g.fillStyle=c;bits.forEach(q=>{q.x+=q.vx;q.y+=q.vy;q.vy+=.06;q.l-=.005;g.globalAlpha=Math.max(q.l,0);g.fillRect(q.x,q.y,4,4)});
+    raf=requestAnimationFrame(lp);
+  })(st);
+  const end=()=>{clearTimeout(tm);cancelAnimationFrame(raf);cs.className="";cs.innerHTML="";busy=0;show(i);draw();next()};
+  const tm=setTimeout(end,d*1000+600);
+  cs.onclick=()=>{if(performance.now()-st>900)end()};
+}
+function buy(k){const u=U.find(a=>a[0]==k),l=S.lvl[k],c=Math.ceil(u[3]*u[4]**l);if(l<u[5]&&S.coins>=c){S.coins-=c;S.lvl[k]++;save();draw()}}
+function buyAuto(){if(S.coins>=3000){S.coins-=3000;S.auto=1;save();draw()}}
+function shop(x,c){if(S.coins>=c){S.coins-=c;S.pot[x]++;save();draw()}}
+function drink(x){if(S.pot[x]>0&&!S.act){S.pot[x]--;S.act=x;save();draw()}}
+
+const C={
+  ismanoki:()=>S.founder?"Founder bonus is already active.":(S.founder=1,"Founder bonus unlocked: 2x luck, permanently."),
+  "6789":()=>S.used["6789"]?"This code is already redeemed.":(S.used["6789"]=1,S.pot[1000]++,"You got an Ultimate potion."),
+  ezwin:()=>(S.pot[1000]++,"You got an Ultimate potion.")
+};
+function redeem(){
+  const k=$("#ci").value.trim().toLowerCase();
+  $("#cm").textContent=Object.hasOwn(C,k)?C[k]():"That code is not valid.";
+  $("#ci").value="";save();draw();
+}
+
+function draw(){
+  $("#st").innerHTML=`<span>Coins ${f(S.coins)}</span><span>Rolls ${S.rolls.toLocaleString()}</span><span>Best aura: ${S.best<0?"none yet":A[S.best][0]}</span>`;
+  $("#lk").innerHTML=`Luck x${(luck()*(S.act||1)).toLocaleString(undefined,{maximumFractionDigits:2})}`+(S.act?` (potion x${S.act} ready for your next roll)`:"");
+  $("#rb").disabled=!!(busy||cd);
+  $("#up").innerHTML="<h2>Upgrades</h2>"+U.map(([k,n,d,b,m,mx])=>{const l=S.lvl[k],c=Math.ceil(b*m**l);return`<div class="row"><div><b>${n}</b> level ${l}/${mx}<small>${d}</small></div><button ${l>=mx||S.coins<c?"disabled":""} onclick="buy('${k}')">${l>=mx?"Max":f(c)+" coins"}</button></div>`}).join("")
+   +`<div class="row"><div><b>Auto-roll</b><small>Rolls for you</small></div>`+(S.auto?`<label><input type="checkbox" ${aon?"checked":""} onchange="aon=this.checked;next()"> On</label>`:`<button ${S.coins<3000?"disabled":""} onclick="buyAuto()">3K coins</button>`)+"</div>";
+  $("#po").innerHTML="<h2>Potions</h2>"+P.map(([x,n,c])=>`<div class="row"><div><b>${n}</b> (you have ${S.pot[x]})<small>Next roll gets x${x} luck</small></div><div><button ${S.pot[x]&&!S.act?"":"disabled"} onclick="drink(${x})">Drink</button>${c?` <button ${S.coins<c?"disabled":""} onclick="shop(${x},${c})">${f(c)} coins</button>`:""}</div></div>`).join("");
+  $("#col").innerHTML=`<h2>Collection (${Object.keys(S.found).length}/${A.length})</h2><div class="col">`+A.map(([n,o,fo,c],i)=>S.found[i]?`<div style="font-family:'${fo}',sans-serif;color:${c}" title="1 in ${o.toLocaleString()}">${n} x${S.found[i]}</div>`:`<div class="no">??? (1 in ${f(o)})</div>`).join("")+"</div>";
+}
+$("#rb").onclick=roll;$("#cb").onclick=redeem;$("#ci").onkeydown=e=>{if(e.key=="Enter")redeem()};
+document.addEventListener("keydown",e=>{if(e.code=="Space"&&document.activeElement.tagName!="INPUT"){e.preventDefault();roll()}});
+$("#rs").onclick=()=>{if(confirm("Delete all progress?")){try{localStorage.removeItem("aurarng")}catch{}location.reload()}};
+const T=[["roll","Roll","hero"],["up","Upgrades","up"],["po","Potions","po"],["codes","Codes","codes"],["col","Collection","col"]];
+function tab(k){T.forEach(([a,n,id])=>{$("#"+id).hidden=a!=k});$("#tabs").innerHTML=T.map(([a,n])=>`<button class="${a==k?"on":""}" onclick="tab('${a}')">${n}</button>`).join("")}
+setInterval(save,5000);tab("roll");draw();
+</script></body></html>
